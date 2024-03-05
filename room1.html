@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combine Images</title>
+    <style>
+        .image-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            /* แบ่งคอลัมน์เป็น 3 ส่วนเท่ากัน */
+            gap: 10px;
+            /* ระยะห่างระหว่างภาพ */
+        }
+
+        .image-container img {
+            width: 100%;
+            /* ทำให้ภาพเต็มแถว */
+            height: auto;
+            /* ให้ความสูงปรับตามอัตราส่วน */
+            object-fit: cover;
+            /* ปรับขนาดภาพให้เต็มในขอบเขต */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="image-container">
+        <img src="image1.jpg" alt="Image 1">
+        <img src="image2.jpg" alt="Image 2">
+        <img src="image3.jpg" alt="Image 3">
+    </div>
+
+    <script>
+        var canvas = document.getElementById('myCanvas');
+        var ctx = canvas.getContext('2d');
+
+        var images = [
+            'image1.jpg',
+            'image2.jpg',
+            'image3.jpg'
+        ];
+
+        var maxWidth = 0;
+        var totalHeight = 0;
+
+        var imageObjects = [];
+
+        var loadedCount = 0;
+        images.forEach(function (src, index) {
+            var img = new Image();
+            img.onload = function () {
+                loadedCount++;
+                maxWidth = Math.max(maxWidth, img.width);
+                totalHeight += img.height;
+                if (loadedCount === images.length) {
+                    canvas.width = maxWidth;
+                    canvas.height = totalHeight;
+                    drawImages();
+                    saveAsImage();
+                }
+            };
+            img.src = src;
+            imageObjects.push(img);
+        });
+
+        function drawImages() {
+            var y = 0;
+            imageObjects.forEach(function (img) {
+                ctx.drawImage(img, 0, y);
+                y += img.height;
+            });
+        }
+
+        function saveAsImage() {
+            // สร้าง URL ของ Canvas ให้เป็นรูปภาพ
+            var dataURL = canvas.toDataURL('image/jpeg');
+
+            // สร้าง element สำหรับดาวน์โหลด
+            var a = document.createElement('a');
+            a.href = dataURL;
+            a.download = 'combined_image.jpg'; // ตั้งชื่อไฟล์ที่ต้องการ
+            a.click(); // คลิกทำการดาวน์โหลดโดยอัตโนมัติ
+        }
+    </script>
+</body>
+
+</html>
