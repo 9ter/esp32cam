@@ -546,7 +546,7 @@ include('subject/search_subjectgroup.php');
 
                                     if (line_token != "") {
                                         console.log("send esp32 ok")
-                                        $.ajax({
+                                       /* $.ajax({
                                             url: 'http://172.16.1.158/ESP32-CAMPHP/combine_image2.php',
                                             type: 'GET',
                                             data: {
@@ -558,9 +558,9 @@ include('subject/search_subjectgroup.php');
                                             },
                                             dataType: 'json',
                                             success: function (data) {
-                                                
+
                                             }
-                                        });
+                                        });*/
                                     }
 
                                 }
@@ -576,12 +576,10 @@ include('subject/search_subjectgroup.php');
                 }
             });
         }
-
         // เรียกใช้งานฟังก์ชันเพื่ออัปเดตเวลาเริ่มต้น
         updateTime();
-
         // ใช้ setInterval เพื่อเรียกใช้งานฟังก์ชัน updateTime ทุกๆ 1 นาที
-        setInterval(updateTime, 60000);
+        setInterval(updateTime, 10000);
     </script>
 
 
