@@ -1,9 +1,9 @@
 <?php
 
-
 include('building/search_building.php');
 include('classroom/search_department.php');
 include('subject/search_subjectgroup.php');
+
 
 
 ?>
@@ -136,7 +136,7 @@ include('subject/search_subjectgroup.php');
                     <div class="col-sm-12 col-xl-6">
                         <div class="bg-secondary rounded h-100 p-4">
                             <h6 class="mb-4">ตั้งค่าวิชา</h6>
-                            <form action="queue/add_queue.php" method="post">
+                            <form action="queue/add_queue.php" method="post" onsubmit="return validateForm()">
                                 <!-- เพิ่ม form tag และกำหนด action ไปที่ไฟล์ process.php -->
 
                                 <div class="form-floating mb-3">
@@ -263,58 +263,40 @@ include('subject/search_subjectgroup.php');
             <div class="container-fluid pt-4 px-4">
                 <div class="bg-secondary rounded h-100 p-4">
                     <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h6 class="mb-0">ห้อง</h6>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <select class="form-select" name="building" id="building"
-                            aria-label="Floating label select example">
-                            <option value="null" selected>แผนก</option>
-                            <?php
-                            while ($row = mysqli_fetch_assoc($department_option_tabel)) {
-                                echo ' <option value="' . $row['name'] . '">' . $row['name'] . '</option>';
-                            }
-                            ?>
-                        </select>
-                        <label for="building">วัน</label>
-                    </div>
-                    <div class="table-responsive">
-                        <table id="myTable" class="table text-start align-middle table-bordered table-hover mb-0">
-                            <thead>
-                                <tr class="text-white">
-                                    <th scope="col">ระดับชั้น</th>
-                                    <th scope="col">ชื่อห้อง</th>
-                                    <th scope="col">LINE TOKEN</th>
-                                    <th scope="col" class="text-primary">ลบ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="container-fluid pt-4 px-4">
-                <div class="bg-secondary rounded h-100 p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
                         <h6 class="mb-0">QUEUE</h6>
                     </div>
                     <div class="table-responsive">
                         <table class="table text-start align-middle table-bordered table-hover mb-0">
                             <thead>
                                 <tr class="text-white">
+                                    <th scope="col">ID</th>
+                                    <th scope="col">หมวด</th>
+                                    <th scope="col">วิชา</th>
+                                    <th scope="col">วัน</th>
+                                    <th scope="col">เริ่มถ่าย</th>
+                                    <th scope="col">ส่งรูป</th>
+                                    <th scope="col">อาคาร</th>
+                                    <th scope="col">ห้อง</th>
+                                    <th scope="col">กล้อง</th>
                                     <th scope="col">แผนก</th>
+                                    <th scope="col">ห้อง</th>
                                     <th scope="col" class="text-primary">ลบ</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php
-                                while ($row = mysqli_fetch_assoc($department_table)) {
-
-                                    echo "<tr><td>" . $row['name'] . "</td> ";
-                                    echo "<td><a class='btn btn-sm btn-primary' href='classroom/del_department.php?id=" . $row['id'] . "'>ลบ</a></td> </tr>";
-
-                                }
-                                ?>
+                                <tr>
+                                    <th scope="col">หมวด</th>
+                                    <th scope="col">วิชา</th>
+                                    <th scope="col">วัน</th>
+                                    <th scope="col">เริ่มถ่าย</th>
+                                    <th scope="col">ส่งรูป</th>
+                                    <th scope="col">อาคาร</th>
+                                    <th scope="col">ห้อง</th>
+                                    <th scope="col">กล้อง</th>
+                                    <th scope="col">แผนก</th>
+                                    <th scope="col">ห้อง</th>
+                                    <th scope="col" class="text-primary">ลบ</th>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -341,6 +323,23 @@ include('subject/search_subjectgroup.php');
 
 
     <script>
+
+        function validateForm() {
+            var group = document.getElementById('group').value;
+            var subject = document.getElementById('subject').value;
+            var day = document.getElementById('day').value;
+            var building = document.getElementById('building').value;
+            var room = document.getElementById('room').value;
+            var camera = document.getElementById('camera').value;
+            var department = document.getElementById('department').value;
+            var classroom = document.getElementById('classroom').value;
+
+            if (group == "null" || subject == "null" || day == "null" || building == "null" || room == "null" || camera == "null" || department == "null" || classroom == "null") {
+                alert("กรุณาเลือกทุกช่อง");
+                return false;
+            }
+            return true;
+        }
 
         document.addEventListener("DOMContentLoaded", function () {
             var groupSelect = document.getElementById("group");
@@ -419,7 +418,7 @@ include('subject/search_subjectgroup.php');
             });
 
             departmentSelect.addEventListener("change", function () {
-                console.log(departmentSelect.value);
+                //console.log(departmentSelect.value);
                 if (departmentSelect.value != "null") {
                     $.ajax({
                         url: 'classroom/search_classroom.php',
@@ -439,6 +438,35 @@ include('subject/search_subjectgroup.php');
                     });
                 }
             });
+
+            $.ajax({
+                url: 'queue/search_queuetable.php',
+                type: 'GET',
+                data: { term: 1 },
+                dataType: 'json',
+                success: function (data) {
+                    var dataArray = Object.keys(data).map(function (key) {
+                        return data[key];
+                    });
+
+                    var tbody = $('.table tbody');
+                    tbody.empty(); // Clear existing rows
+
+                    dataArray.forEach(function (rowData) {
+                        var row = $('<tr>');
+                        Object.values(rowData).forEach(function (value) {
+                            row.append($('<td>').text(value));
+                        });
+
+                        // Append delete button
+                        row.append($('<td>').html('<a href="queue/del_queue.php?id=' + rowData.id + '" class="btn btn-danger">Delete</a>'));
+
+                        tbody.append(row);
+                    });
+                }
+            });
+
+
         });
 
         // เรียกใช้งาน Element ที่มี id เป็น "time"
@@ -450,7 +478,7 @@ include('subject/search_subjectgroup.php');
             var currentTime = new Date();
             var currentDate = new Date();
             var dayNumber = currentDate.getDay() || 7; // วันอาทิตย์จะได้เลข 0 จึงเราใช้ || 7 เพื่อเปลี่ยนเลข 0 เป็น 7
-
+            console.log("day -> " + dayNumber)
 
             var year = currentDate.getFullYear();
             var month = (currentDate.getMonth() + 1).toString().padStart(2, "0"); // เดือนเริ่มที่ 0 (มกราคม) จึงต้องเพิ่ม 1 เพื่อให้เป็นตัวแทนของเดือนจริง
@@ -458,7 +486,7 @@ include('subject/search_subjectgroup.php');
             // จัดรูปแบบใหม่เป็นปี-เดือน-วัน
             var formattedDate = year + "" + month + "" + day;
 
-            console.log(formattedDate);
+            //console.log(formattedDate);
 
 
             // เก็บชั่วโมง (hours) และนาที (minutes)
@@ -471,10 +499,12 @@ include('subject/search_subjectgroup.php');
 
             // สร้างข้อความที่จะแสดงใน Element "time"
             var timeString = hours + ":" + minutes;
-
+            console.log("time -> " + timeString)
             // กำหนดข้อความที่สร้างให้กับ innerHTML ของ Element "time"
             timeElement.innerHTML = timeString;
 
+
+            let line_token = "";
             $.ajax({
                 url: 'queue/search_queue.php',
                 type: 'GET',
@@ -485,37 +515,67 @@ include('subject/search_subjectgroup.php');
                         return data[key];
                     });
 
-                    console.log(dataArray);
+                    //console.log(dataArray);
                     for (var i = 0; i < dataArray.length; i++) {
 
                         var timeParts = dataArray[i].time_stop.split(":");
                         var hoursParts = parseInt(timeParts[0]);
                         var minutesParts = parseInt(timeParts[1]);
 
+                        let camera = dataArray[i].camera
+                        let time_start = dataArray[i].time_start
+                        let time_stop = dataArray[i].time_stop
+
                         if (hoursParts == hours && minutesParts == minutes) {
+                            console.log("id - >" + dataArray[i].classroom);
+
                             $.ajax({
-                                url: '172.16.1.158/ESP32-CAMPHP/combine_image2.php',
+                                url: 'classroom/search_linetoken.php',
                                 type: 'GET',
                                 data: {
-                                    camera: dataArray[i].camera, date: formattedDate,
-                                    time_start: dataArray[i].time_start,
-                                    time_stop: dataArray[i].time_stop
+                                    id: dataArray[i].classroom
                                 },
                                 dataType: 'json',
                                 success: function (data) {
+                                    var dataArraygetline = Object.keys(data).map(function (key) {
+                                        return data[key];
+                                    });
+
+                                    line_token = dataArraygetline[0].line_token;
+                                    console.log("line_token -> " + line_token);
+
+                                    if (line_token != "") {
+                                        console.log("send esp32 ok")
+                                        $.ajax({
+                                            url: 'http://172.16.1.158/ESP32-CAMPHP/combine_image2.php',
+                                            type: 'GET',
+                                            data: {
+                                                camera: camera,
+                                                date: formattedDate,
+                                                time_start: time_start,
+                                                time_stop: time_stop,
+                                                line: line_token
+                                            },
+                                            dataType: 'json',
+                                            success: function (data) {
+                                                
+                                            }
+                                        });
+                                    }
 
                                 }
                             });
+
+                            console.log("camera -> " + camera);
+                            console.log("date -> " + formattedDate);
+                            console.log("time_start -> " + time_start);
+                            console.log("time_stop -> " + time_stop);
+
                         }
                     }
                 }
             });
-
-
         }
-
-
-
 
         // เรียกใช้งานฟังก์ชันเพื่ออัปเดตเวลาเริ่มต้น
         updateTime();
