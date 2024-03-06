@@ -545,22 +545,25 @@ include('subject/search_subjectgroup.php');
                                     console.log("line_token -> " + line_token);
 
                                     if (line_token != "") {
-                                        console.log("send esp32 ok")
-                                       /* $.ajax({
-                                            url: 'http://172.16.1.158/ESP32-CAMPHP/combine_image2.php',
-                                            type: 'GET',
+                                        //console.log("send esp32 ok")
+                                        $.ajax({
+                                            url: 'combine_image2.php',
+                                            type: 'POST',
                                             data: {
                                                 camera: camera,
                                                 date: formattedDate,
                                                 time_start: time_start,
                                                 time_stop: time_stop,
-                                                line: line_token
+
                                             },
                                             dataType: 'json',
                                             success: function (data) {
-
+                                                var dataesp32 = Object.keys(data).map(function (key) {
+                                                    return data[key];
+                                                });
+                                                console.log(dataesp32);
                                             }
-                                        });*/
+                                        });
                                     }
 
                                 }
@@ -579,7 +582,7 @@ include('subject/search_subjectgroup.php');
         // เรียกใช้งานฟังก์ชันเพื่ออัปเดตเวลาเริ่มต้น
         updateTime();
         // ใช้ setInterval เพื่อเรียกใช้งานฟังก์ชัน updateTime ทุกๆ 1 นาที
-        setInterval(updateTime, 10000);
+        setInterval(updateTime, 60000);
     </script>
 
 
