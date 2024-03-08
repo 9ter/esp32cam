@@ -478,7 +478,7 @@ include('subject/search_subjectgroup.php');
             var currentTime = new Date();
             var currentDate = new Date();
             var dayNumber = currentDate.getDay() || 7; // วันอาทิตย์จะได้เลข 0 จึงเราใช้ || 7 เพื่อเปลี่ยนเลข 0 เป็น 7
-            console.log("day -> " + dayNumber)
+           // console.log("day -> " + dayNumber)
 
             var year = currentDate.getFullYear();
             var month = (currentDate.getMonth() + 1).toString().padStart(2, "0"); // เดือนเริ่มที่ 0 (มกราคม) จึงต้องเพิ่ม 1 เพื่อให้เป็นตัวแทนของเดือนจริง
@@ -499,90 +499,13 @@ include('subject/search_subjectgroup.php');
 
             // สร้างข้อความที่จะแสดงใน Element "time"
             var timeString = hours + ":" + minutes;
-            console.log("time -> " + timeString)
+            //console.log("time -> " + timeString)
             // กำหนดข้อความที่สร้างให้กับ innerHTML ของ Element "time"
             timeElement.innerHTML = timeString;
 
 
-            let line_token = "";
-            $.ajax({
-                url: 'queue/search_queue.php',
-                type: 'GET',
-                data: { term: dayNumber },
-                dataType: 'json',
-                success: function (data) {
-                    var dataArray = Object.keys(data).map(function (key) {
-                        return data[key];
-                    });
-
-                    //console.log(dataArray);
-                    for (var i = 0; i < dataArray.length; i++) {
-
-                        var timeParts = dataArray[i].time_stop.split(":");
-                        var hoursParts = parseInt(timeParts[0]);
-                        var minutesParts = parseInt(timeParts[1]);
-
-                        let camera = dataArray[i].camera
-                        let time_start = dataArray[i].time_start
-                        let time_stop = dataArray[i].time_stop
-
-                        if (hoursParts == hours && minutesParts == minutes) {
-                            console.log("id - >" + dataArray[i].classroom);
-
-                            $.ajax({
-                                url: 'classroom/search_linetoken.php',
-                                type: 'GET',
-                                data: {
-                                    id: dataArray[i].classroom
-                                },
-                                dataType: 'json',
-                                success: function (data) {
-                                    var dataArraygetline = Object.keys(data).map(function (key) {
-                                        return data[key];
-                                    });
-
-                                    line_token = dataArraygetline[0].line_token;
-                                    console.log("line_token -> " + line_token);
-
-                                    if (line_token != "") {
-                                        //console.log("send esp32 ok")
-                                        $.ajax({
-                                            url: 'combine_image2.php',
-                                            type: 'POST',
-                                            data: {
-                                                camera: camera,
-                                                date: formattedDate,
-                                                time_start: time_start,
-                                                time_stop: time_stop,
-
-                                            },
-                                            dataType: 'json',
-                                            success: function (data) {
-                                                var dataesp32 = Object.keys(data).map(function (key) {
-                                                    return data[key];
-                                                });
-                                                console.log(dataesp32);
-                                            }
-                                        });
-                                    }
-
-                                }
-                            });
-
-                            console.log("camera -> " + camera);
-                            console.log("date -> " + formattedDate);
-                            console.log("time_start -> " + time_start);
-                            console.log("time_stop -> " + time_stop);
-
-                        }
-                    }
-                }
-            });
         }
-        // เรียกใช้งานฟังก์ชันเพื่ออัปเดตเวลาเริ่มต้น
-        updateTime();
-        // ใช้ setInterval เพื่อเรียกใช้งานฟังก์ชัน updateTime ทุกๆ 1 นาที
-        setInterval(updateTime, 60000);
+        setInterval(updateTime, 1000);
     </script>
 
 
